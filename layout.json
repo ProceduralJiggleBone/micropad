@@ -1,7 +1,11 @@
 {
-"shape": [5, 3],
+"shape": [1, 2],
 
 "items": [
+    {
+        "externalHTML": false,
+        "HTML": "<b>hello from layout.json</b>"
+    },
     {
         "externalHTML": true,
         "HTML": "2x3.html"

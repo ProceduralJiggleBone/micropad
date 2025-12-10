@@ -8,39 +8,40 @@ let innerHtml = ""
 const app = express();
 const hbs = create({ /* config */ });
 
-let size = [5, 3];
+//let size = [5, 3];
+let rawdata = fs.readFileSync('layout.json');
+let layout = JSON.parse(rawdata);
+console.log(layout);
 let columns = [];
 let rows = [];
 let items = [];
-let sizewidth = size[0];
-let sizeheight = size[1];
+let numOfColumns = layout.shape[0];
+let numOfRows = layout.shape[1];
 let boxname = 0;
 
-/*for (let x = 0; x < size[0]; x++) {
-    //console.log("x=" + x);
-
-    for (let y = 0; y < size[1]; y++) {
-        items.push(String(x + 1) + "x" + String(y + 1));
-    }
-    columns.push(x + 1);
-}*/
-for  (let y = 0; y < size[1]; y++) {
-
-    for (let x = 0; x < size[0]; x++){
-        boxname = String(x + 1) + "x" + String(y + 1)
-        items.push(boxname);
-            fs.readFile('2x3.html', 'utf8', (err, data) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                console.log(data);
-            });
-        columns[x] = x + 1;
-    }
-    rows[y] = y + 1;
+for (let i = 0; i < layout.shape[0]; i++) {
+    columns[i] = i + 1;
 }
-//items[4] = ''
+
+for (let i = 0; i < layout.shape[1]; i++) {
+    rows[i] = i + 1;
+}
+for (let i = 0; i < layout.items.length; i++) {
+
+    if (layout.items[i].externalHTML) {
+        fs.readFile(layout.items[i].HTML, 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log(data);
+            items.push(data);
+        });
+    } else {
+        items.push(layout.items[i].HTML);
+    }
+
+};
 console.log(items);
 console.log(columns);
 console.log(rows);
@@ -50,9 +51,7 @@ app.set('view engine', 'handlebars');
 app.set('views', './views');
 
 app.get('/', (req, res) => {
-    /*innerHtml = hbs.renderView("views/external.handlebars", {layout: false});*/
-    /*console.log(innerHtml);*/
-    res.render('home', {items: items, sizewidth: sizewidth, columns: columns, rows: rows, sizeheight: sizeheight});
+    res.render('home', {items: items, numOfColumns: numOfColumns, columns: columns, rows: rows, numOfRows: numOfRows});
 });
 
 app.listen(3000, '0.0.0.0');
